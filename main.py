@@ -51,6 +51,41 @@ def user_id_middleware(func: Callable):
             pass
     return wrapper
 
+async def get_current_price_by_ticker(ticker: str, market: str = "TQBR") -> str:
+    async with (AsyncClient(T_TOKEN, target=INVEST_GRPC_API) as client):
+        instruments = await client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
+                                                        class_code=market, id=ticker)
+        # .shares(instrument_status=InstrumentStatus.INSTRUMENT_STATUS_BASE)
+        # for instrument in instruments.instruments:
+        #     print(f"{instrument.name=}, {instrument.class_code=}")
+        price = await client.market_data.get_last_prices(figi=[instruments.instrument.figi])
+        # market = await client.market_data.get_candles(figi=instruments.instrument.figi,
+        #     instrument_id=instruments.instrument.uid,
+        #     from_=now() - timedelta(days=1),
+        #     interval=CandleInterval.CANDLE_INTERVAL_5_MIN,
+        #     candle_source_type=CandleSource.CANDLE_SOURCE_UNSPECIFIED,
+        #                                               )
+        nano = str(price.last_prices[0].price.nano)
+        units = str(price.last_prices[0].price.units)
+        print(f"{units=}")
+        k = False
+        real_nano = ""
+        for num in nano:
+            if num == "0" and not k:
+                continue
+            elif num != "0" and not k:
+                k = True
+                real_nano += num
+            elif num != "0":
+                real_nano += num
+
+
+        print(f"{nano=}; {real_nano=}")
+        if real_nano != "":
+            return units + "," + real_nano + " ₽"
+        else:
+            return units + " ₽"
+
 @dp.message(CommandStart())
 @user_id_middleware
 async def command_start_handler(message: Message) -> None:
@@ -65,37 +100,18 @@ async def command_start_handler(message: Message) -> None:
     await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!")
 
 
-@dp.message((Command('head')))
-@user_id_middleware
-async def ticker_handler(message: Message) -> None:
-    """
-    Handler will forward receive a message back to the sender
+# @dp.message((Command('head')))
+# @user_id_middleware
+# async def ticker_handler(message: Message) -> None:
 
-    By default, message handler will handle all message types (like a text, photo, sticker etc.)
-    """
-    async with (AsyncClient(T_TOKEN, target=INVEST_GRPC_API) as client):
-        instruments = await client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER,
-                                                        class_code="TQBR", id="HEAD")
-        # .shares(instrument_status=InstrumentStatus.INSTRUMENT_STATUS_BASE)
-        # for instrument in instruments.instruments:
-        #     print(f"{instrument.name=}, {instrument.class_code=}")
-        print(f"{instruments.instrument=}")
-        print(f"{instruments.instrument.figi=}, {instruments.instrument.uid=}")
-        price = await client.market_data.get_last_prices(instrument_id=instruments.instrument.uid)
-        print(f"[x] {price.last_prices=}")
-    await message.answer(instruments.instrument)
 
 @dp.message()
 @user_id_middleware
 async def echo_handler(message: Message) -> None:
-    """
-    Handler will forward receive a message back to the sender
-
-    By default, message handler will handle all message types (like a text, photo, sticker etc.)
-    """
     try:
         # Send a copy of the received message
-        await message.send_copy(chat_id=message.chat.id)
+        price = await get_current_price_by_ticker(str(message.text))
+        await message.answer(price)
     except TypeError:
         # But not all the types is supported to be copied so need to handle it
         await message.answer("Nice try!")
