@@ -1,2 +1,4 @@
 aiogram==3.18.0
 aiocron==2.1
+dotenv==0.9.9
+tinkoff-investments==0.2.0b109
