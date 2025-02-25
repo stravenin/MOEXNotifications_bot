@@ -1,0 +1,44 @@
+services:
+  notifications:
+    build: .
+    restart: always
+    container_name: notifications
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+
+      TG_TOKEN: ${TG_TOKEN}
+      THRUST_USER_ID: ${THRUST_USER_ID}
+      T_TOKEN: ${T_TOKEN}
+    networks:
+      - network
+    expose:
+      - ${APP_PORT}
+
+  notifications-db:
+    image: postgres:16.4
+    restart: always
+    container_name: notifications-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - notificationsDbVolume:/var/lib/postgresql/data
+    networks:
+      - network
+
+
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  notificationsDbVolume:

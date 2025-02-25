@@ -88,7 +88,7 @@ async def new_notification(data: dict[str, str], user_id: int) -> float | None:
     if 0 == len(ticker) or len(ticker) > 4 or len(target_price) == 0:
         raise ValueError("Введите корректный тикер и цену")
     try:
-        target_price = target_price.replace(" ", "").replace(",",".")
+        target_price = target_price.replace(" ", "").replace(",",".").replace("р","").replace("₽","")
         float(target_price)
     except:
         raise ValueError("Введите целевую цену в форме десятичной дроби")
@@ -129,15 +129,15 @@ async def check_prices(bot: Bot):
 
 
                 await bot.send_message(user_id,
-                                       f"🟢 Акция {nt.ticker} достигла целевой цены: {nt.target_price}. Текущая цена: {current_price}. \n"
-                                       f"Изменение составило: {str(real_price_percent)}% от изначальной цены: {}")
+                                       f"🟢 Акция {nt.ticker} достигла целевой цены: {nt.target_price}. Текущая цена: {current_price}₽. \n"
+                                       f"Изменение составило: {str(real_price_percent)}% от изначальной цены: {nt.price}₽")
                 await db.delete_notifications_by_id([nt.id])
 
             if price_percent < 0 and float(current_price) <= float(nt.target_price):
 
                 await bot.send_message(user_id,
-                                       f"🔴 Акция {nt.ticker} достигла целевой цены: {nt.target_price}. Текущая цена: {current_price}. \n"
-                                       f"Изменение составило: {str(real_price_percent)}%")
+                                       f"🔴 Акция {nt.ticker} достигла целевой цены: {nt.target_price}. Текущая цена: {current_price}₽. \n"
+                                       f"Изменение составило: {str(real_price_percent)}% от изначальной цены: {nt.price}₽")
                 await db.delete_notifications_by_id([nt.id])
 
 
@@ -166,7 +166,7 @@ async def ticker_handler(message: Message, state: FSMContext) -> None:
     await state.update_data(ticker=message.text)
     await state.set_state(CreateNotification.target_price)
     price = await get_current_price_by_ticker(message.text)
-    await message.answer(f"Введите целевую цену акции в рублях. Текущая: {price}")
+    await message.answer(f"Введите целевую цену акции в рублях. Текущая: {price}₽")
 
 @router.message(CreateNotification.target_price)
 async def ticker_handler(message: Message, state: FSMContext) -> None:
@@ -189,7 +189,7 @@ async def ticker_handler(message: Message, state: FSMContext) -> None:
             reply_markup=StartKeyboard)
 
     if new_nt:
-        await message.answer(f"Уведомление для {data["ticker"]} с целевой ценой: {data["target_price"]}р успешно создано. Изменение: {round(new_nt, 1)}%", reply_markup=StartKeyboard)
+        await message.answer(f"Уведомление для {data["ticker"]} с целевой ценой: {data["target_price"]}₽ успешно создано. Изменение: {round(new_nt, 1)}%", reply_markup=StartKeyboard)
 
     await state.clear()
 
