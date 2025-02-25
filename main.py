@@ -9,9 +9,12 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from app.handlers import router, check_prices
-from config import TG_TOKEN
+from app.core.config import TG_TOKEN
 
-
+"""
+nt - notification
+nts - notifications
+"""
 
 
 loop = asyncio.new_event_loop()

@@ -4,7 +4,7 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Message
 
-from config import THRUST_USERS
+from app.core.config import THRUST_USERS
 
 
 class AuthMiddleware(BaseMiddleware):

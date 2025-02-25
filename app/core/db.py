@@ -1,10 +1,7 @@
 import asyncio
 import platform
-import os
 from functools import wraps
 from typing import List
-
-from dotenv import load_dotenv
 
 from sqlalchemy import select, delete
 from sqlalchemy.pool import NullPool
@@ -12,17 +9,18 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 
 from app.core.models import NotificationModel
 from app.core.schemas import Notification
+from app.core.config import (
+    POSTGRES_USER,
+    POSTGRES_PASSWORD,
+    POSTGRES_DB,
+    POSTGRES_HOST,
+    POSTGRES_PORT
+)
 
 if platform.system() == "Windows":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-load_dotenv()
 
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_DB = os.getenv("POSTGRES_DB")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 DB_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 async_engine = create_async_engine(
@@ -86,8 +84,15 @@ class db:
     async def get_notifications_by_user_id(session: AsyncSession, user_id: int):
         raw = (await session.execute(select(NotificationModel).where(NotificationModel.user_id == user_id))).all()
         print(f"{raw=}")
-        return [Notification(**filter_system_data(user[0])) for user in raw]
+        return [Notification(**filter_system_data(r[0])) for r in raw]
 
+    @staticmethod
+    @db_exception_handler
+    @with_db_session
+    async def get_notification_by_id(session: AsyncSession, _id: int):
+        raw = (await session.execute(select(NotificationModel).where(NotificationModel.id == _id))).scalar()
+        print(f"{raw=}")
+        return Notification(**filter_system_data(raw))
 
 
 
