@@ -1,8 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
+from app.core.models import str_4
 
-class NotificationSchema(BaseModel):
+
+class Notification(BaseModel):
     id: Optional[int] = None
     user_id: int
     ticker: str
