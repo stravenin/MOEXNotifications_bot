@@ -153,7 +153,7 @@ async def command_start_handler(message: Message) -> None:
     # and the target chat will be passed to :ref:`aiogram.methods.send_message.SendMessage`
     # method automatically or call API method directly via
     # Bot instance: `bot.send_message(chat_id=message.chat.id, ...)`
-    await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!", reply_markup=StartKeyboard)
+    await message.answer(f"Привет, {html.bold(message.from_user.full_name)}!\n Выбери команду.", reply_markup=StartKeyboard)
 
 
 @router.message(F.text == "Создать уведомление")

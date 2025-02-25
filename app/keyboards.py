@@ -7,7 +7,7 @@ StartKeyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Создать уведомление")],
     [KeyboardButton(text="Список уведомлений")],
 ], resize_keyboard=True,
-input_field_placeholder="Выберите пункт меню",
+input_field_placeholder="Выбери команду",
 one_time_keyboard=True)
 
 def get_nts_inline(nts: list[Notification]):
