@@ -1,3 +1,4 @@
+from sqlalchemy import BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from app.core.database import Base, str_4, str_15
@@ -6,8 +7,8 @@ from app.core.database import Base, str_4, str_15
 class NotificationModel(Base):
     __tablename__ = "notifications"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(index=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, index=True)
     ticker: Mapped[str_4]
     figi: Mapped[str_15]
     price: Mapped[str_15]

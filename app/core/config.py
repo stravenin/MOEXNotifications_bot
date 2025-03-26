@@ -5,7 +5,7 @@ load_dotenv()
 class Settings:
 
     TG_TOKEN = getenv("TG_TOKEN")
-    ADMIN_USERS = [int(getenv("ADMIN_USER_ID"))]
+    ADMIN_USERS = [int(getenv("ADMIN_USER_ID", "-1"))]
     T_TOKEN = getenv("T_TOKEN")
 
     POSTGRES_USER = getenv("POSTGRES_USER")
