@@ -5,8 +5,8 @@ from aiogram import html, Router, F
 from aiogram.fsm.state import State, StatesGroup
 
 
-from app.keyboards import StartKeyboard, get_nts_inline, delete_nt_inline
-from app.middlewares import DepMiddleware
+from app.utils.keyboards import StartKeyboard, get_nts_inline, delete_nt_inline
+from app.utils.middlewares import DepMiddleware
 from app.services.notification_service import NotificationService
 
 router = Router()
@@ -24,11 +24,6 @@ async def command_start_handler(message: Message, nt_service: NotificationServic
     """
     This handler receives messages with `/start` command
     """
-    # Most event objects have aliases for API methods that can be called in events' context
-    # For example if you want to answer to incoming message you can use `message.answer(...)` alias
-    # and the target chat will be passed to :ref:`aiogram.methods.send_message.SendMessage`
-    # method automatically or call API method directly via
-    # Bot instance: `bot.send_message(chat_id=message.chat.id, ...)`
     await message.answer(f"Привет, {html.bold(message.from_user.full_name)}!\nВыбери команду.", reply_markup=StartKeyboard)
 
 
