@@ -8,8 +8,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from app.handlers import router, check_prices
-from app.core.config import TG_TOKEN
+from app.handlers import router
+from app.core.config import settings
+from app.utils.scheduled import check_prices
 
 """
 nt - notification
@@ -31,7 +32,7 @@ dp = Dispatcher()
 
 async def main() -> None:
     # Initialize Bot instance with default bot properties which will be passed to all API calls
-    bot = Bot(token=TG_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(token=settings.TG_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp.include_router(router)
     cron_min = aiocron.crontab('*/1 * * * *', func=check_prices, args=[bot], start=True, loop=loop)
 

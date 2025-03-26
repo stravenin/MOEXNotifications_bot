@@ -11,7 +11,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT}
 
       TG_TOKEN: ${TG_TOKEN}
-      THRUST_USER_ID: ${THRUST_USER_ID}
+      ADMIN_USER_ID: ${ADMIN_USER_ID}
       T_TOKEN: ${T_TOKEN}
     networks:
       - network

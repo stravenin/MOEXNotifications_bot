@@ -1,7 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional
-
-from app.core.models import str_4
 
 
 class Notification(BaseModel):
